@@ -7,11 +7,36 @@ import ssl
 import urllib3
 from pathlib import Path
 
-# Disable SSL warnings and fix certificate issues
+# Auto-install required packages on first run
+marker = os.path.expanduser('~/.soundcloud_sync_initialized')
+if not os.path.exists(marker):
+    packages = ['scdl', 'yt-dlp', 'ffmpeg-python']
+    print("Setting up required packages (first time only)...")
+    
+    # Use the same Python executable that's running this script
+    python_exe = sys.executable
+    
+    for pkg in packages:
+        try:
+            __import__(pkg)
+            print(f"{pkg} already installed")
+        except ImportError:
+            print(f"Installing {pkg}...")
+            try:
+                subprocess.check_call([python_exe, '-m', 'pip', 'install', pkg, '--break-system-packages', '--quiet'])
+                print(f"{pkg} installed successfully")
+            except Exception as e:
+                print(f"Failed to install {pkg}: {e}")
+    
+    # Create marker file to skip this next time
+    os.makedirs(os.path.dirname(marker), exist_ok=True)
+    with open(marker, 'w') as f:
+        f.write('initialized')
+    print("Setup complete! You won't see this message again.")
+
+# Fix SSL issues
 urllib3.disable_warnings()
 ssl._create_default_https_context = ssl._create_unverified_context
-
-# Also try certifi
 try:
     import certifi
     os.environ['SSL_CERT_FILE'] = certifi.where()
@@ -28,30 +53,19 @@ def download_playlist(auth_token, playlist_url, download_path):
     
     try:
         from scdl.scdl import _main
-        print("scdl module found - calling _main function")
-        
-        # Set up sys.argv for scdl
+        print("scdl module found")
         sys.argv = ['scdl', '-l', playlist_url, '--auth-token', auth_token, '--path', download_path, '--onlymp3']
         _main()
         print("Download successful!")
         return True
-        
     except Exception as e:
         print(f"Error: {e}")
-        print("ERROR: scdl failed")
         return False
 
 def get_apple_music_songs():
     """Get list of songs in Apple Music library"""
     print("Checking Apple Music library...")
-    
-    applescript = '''
-    tell application "Music"
-        set songCount to (count of tracks)
-        return songCount
-    end tell
-    '''
-    
+    applescript = 'tell application "Music" to return count of tracks'
     try:
         result = subprocess.run(['osascript', '-e', applescript], capture_output=True, text=True)
         count = int(result.stdout.strip())
@@ -64,20 +78,13 @@ def get_apple_music_songs():
 def create_playlist(name):
     """Create a new playlist in Apple Music"""
     print(f"Creating playlist: {name}")
-    
-    applescript = f'''
-    tell application "Music"
-        make new playlist with properties {{name:"{name}"}}
-        return "success"
-    end tell
-    '''
-    
+    applescript = f'tell application "Music" to make new playlist with properties {{name:"{name}"}}'
     try:
-        result = subprocess.run(['osascript', '-e', applescript], capture_output=True, text=True)
+        subprocess.run(['osascript', '-e', applescript], capture_output=True, text=True)
         print(f"Playlist created: {name}")
         return True
     except:
-        print(f"Failed to create playlist")
+        print("Failed to create playlist")
         return False
 
 def add_songs_to_apple_music(folder_path, playlist_name, album_artist):
@@ -97,28 +104,21 @@ def add_songs_to_apple_music(folder_path, playlist_name, album_artist):
                 if result.returncode == 0:
                     os.replace(f"{mp3_file}.tmp", mp3_file)
             
-            applescript = f'''
-            tell application "Music"
-                add POSIX file "{mp3_file}" to playlist "{playlist_name}"
-            end tell
-            '''
-            
-            result = subprocess.run(['osascript', '-e', applescript], capture_output=True, text=True)
+            applescript = f'tell application "Music" to add POSIX file "{mp3_file}" to playlist "{playlist_name}"'
+            subprocess.run(['osascript', '-e', applescript], capture_output=True, text=True)
             print(f"Added: {mp3_file.name}")
-            
         except Exception as e:
             print(f"Error adding {mp3_file.name}: {e}")
 
 def main():
     parser = argparse.ArgumentParser(description='SoundCloud to Apple Music Sync')
-    parser.add_argument('--auth-token', required=True, help='SoundCloud auth token')
-    parser.add_argument('--playlist-url', required=True, help='SoundCloud playlist URL')
-    parser.add_argument('--album-name', required=True, help='Album name for Apple Music')
-    parser.add_argument('--album-artist', help='Album artist name')
-    parser.add_argument('--download-path', required=True, help='Download path')
+    parser.add_argument('--auth-token', required=True)
+    parser.add_argument('--playlist-url', required=True)
+    parser.add_argument('--album-name', required=True)
+    parser.add_argument('--album-artist')
+    parser.add_argument('--download-path', required=True)
     
     args = parser.parse_args()
-    
     print("Starting sync process...")
     
     get_apple_music_songs()
