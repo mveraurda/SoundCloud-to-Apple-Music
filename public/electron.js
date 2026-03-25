@@ -27,13 +27,19 @@ function getFfmpegPath() {
     return path.join(getResourcesPath(), 'ffmpeg');
 }
 
+function getScdlPath() {
+    return path.join(getResourcesPath(), 'scdl');
+}
+
 // Make sure bundled binaries are executable
 function ensureBinariesExecutable() {
     const syncBin = getSyncBinPath();
     const ffmpeg = getFfmpegPath();
+    const scdl = getScdlPath();
     try {
         if (fs.existsSync(syncBin)) fs.chmodSync(syncBin, '755');
         if (fs.existsSync(ffmpeg)) fs.chmodSync(ffmpeg, '755');
+        if (fs.existsSync(scdl)) fs.chmodSync(scdl, '755');
     } catch (e) {
         console.log('chmod error (non-fatal):', e.message);
     }
@@ -94,6 +100,7 @@ ALBUM_ARTIST=${albumArtist}`;
 
         const syncBin = getSyncBinPath();
         const ffmpegPath = getFfmpegPath();
+        const scdlPath = getScdlPath();
 
         // Check bundled binary exists
         if (!fs.existsSync(syncBin)) {
@@ -102,10 +109,11 @@ ALBUM_ARTIST=${albumArtist}`;
             return;
         }
 
-        // Pass ffmpeg path as env variable so sync_bin can find it
+        // Pass ffmpeg and scdl paths as env variables so sync_bin can find them
         const env = {
             ...process.env,
             FFMPEG_PATH: ffmpegPath,
+            SCDL_PATH: scdlPath,
             PATH: `${getResourcesPath()}:${process.env.PATH}`
         };
 

@@ -20,15 +20,16 @@ except:
 FFMPEG_PATH = os.environ.get('FFMPEG_PATH', 'ffmpeg')
 
 def find_scdl():
-    """Find scdl executable in common locations"""
+    """Find scdl executable — bundled first, then common system locations"""
     candidates = [
+        os.environ.get('SCDL_PATH', ''),  # bundled scdl passed by electron
         os.path.join(os.path.dirname(sys.executable), 'scdl'),
         os.path.expanduser('~/.local/bin/scdl'),
         '/usr/local/bin/scdl',
         '/opt/homebrew/bin/scdl',
     ]
     for c in candidates:
-        if os.path.isfile(c) and os.access(c, os.X_OK):
+        if c and os.path.isfile(c) and os.access(c, os.X_OK):
             return c
     return None
 
