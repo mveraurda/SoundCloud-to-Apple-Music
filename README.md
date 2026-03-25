@@ -14,7 +14,7 @@ Download SoundCloud playlists and automatically sync them to Apple Music on macO
 
 - macOS (Intel or Apple Silicon)
 - Python 3.9+
-- Required Python packages: scdl, yt-dlp, ffmpeg-python
+- Apple Music App is OPEN when using sync tool
 
 ## Installation
 
@@ -24,7 +24,7 @@ Download SoundCloud playlists and automatically sync them to Apple Music on macO
 
 ## First Time Setup
 
-opening the app on mac
+Opening the app on mac
 
 macOS will block apps from unidentified developers by default. if this happens:
 
@@ -44,6 +44,8 @@ To sync across your devices:
    - Open Apple Music
    - Go to Music → Settings → General
    - Turn on “Sync Library”
+
+DIRECTIONS ON TOP RIGHT OF APP (these are rewritten)
 
 1. Get your SoundCloud token:
 
@@ -65,12 +67,6 @@ To sync across your devices:
 
 Each album MUST have its own download folder. If you sync different playlists to the same folder, songs will be re-added to Apple Music and create duplicates.
 
-## Troubleshooting
-
-If you see "scdl: command not found", install dependencies:
-```
-pip install scdl yt-dlp ffmpeg-python --break-system-packages
-```
 
 If songs don't appear in Apple Music, check:
 - Your SoundCloud token is correct
