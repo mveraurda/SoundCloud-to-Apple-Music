@@ -1,10 +1,7 @@
 node_modules/
 dist/
-.DS_Store
-*.dmg
-*.zip
-.env
-resources/sync_bin
-resources/ffmpeg
-resources/scdl
-dist/
+build/
+__pycache__/
+*.pyc
+*.spec
+build_dist/
