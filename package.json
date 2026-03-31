@@ -1,6 +1,6 @@
 {
   "name": "soundcloud-sync",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "main": "public/electron.js",
   "scripts": {
     "start": "electron .",
