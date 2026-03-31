@@ -5,7 +5,7 @@ a = Analysis(
     ['public/sync.py'],
     pathex=[],
     binaries=[],
-    datas=[('/opt/homebrew/lib/python3.13/site-packages/scdl/scdl.cfg', 'scdl')],
+    datas=[('/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/scdl', 'scdl')],
     hiddenimports=[],
     hookspath=[],
     hooksconfig={},

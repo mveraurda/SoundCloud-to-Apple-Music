@@ -169,24 +169,12 @@
                             </div>
 
                             <div class="form-group">
-                                <label>Album Name <span class="required">*</span></label>
-                                <input type="text" id="amAlbumName" placeholder="Name for this album in Apple Music">
-                            </div>
-
-                            <div class="form-group">
-                                <label>Album Artist</label>
-                                <input type="text" id="amAlbumArtist" placeholder="Artist name (optional)">
-                            </div>
-
-                            <div class="info-note">Each album must have its own new folder. Do not reuse folders.</div>
-
-                            <div class="form-group">
                                 <label>Download Folder <span class="required">*</span></label>
                                 <div class="path-container">
                                     <input type="text" id="amDownloadPath" placeholder="/Users/username/Music/AlbumName">
                                     <button class="button button-secondary button-small" onclick="selectPath('amDownloadPath')">Browse</button>
                                 </div>
-                                <div class="help-text">Create a new folder for each album</div>
+                                <div class="help-text">Choose or create a folder for songs</div>
                             </div>
 
                             <button class="button button-secondary" onclick="saveConfig('am')">Save Config</button>
@@ -244,7 +232,7 @@
                                 <div class="help-text">Direct playlist link only</div>
                             </div>
 
-                            <div class="info-note">Songs will be downloaded to your chosen folder and automatically appear in Spotify under Local Files. You can then add them to any playlist manually.<br><br>To sync to iPhone: connect via USB, open Finder, and copy the folder to your device.</div>
+                            <div class="info-note">Songs will be downloaded to your chosen folder and automatically appear in Spotify under Local Files. You can then add them to any playlist manually.</div>
 
                             <div class="form-group">
                                 <label>Download Folder <span class="required">*</span></label>
@@ -399,21 +387,16 @@
             </div>
             <div class="guide-step">
                 <span class="guide-step-number">3</span>
-                <span class="guide-step-title">Name Your Album</span>
-                <div class="guide-step-content">Enter an album name and optional artist. This is how the songs will appear in Apple Music.</div>
-            </div>
-            <div class="guide-step">
-                <span class="guide-step-number">4</span>
                 <span class="guide-step-title">Choose a Download Folder</span>
                 <div class="guide-step-content">Click Browse and create a new folder for these songs. Each playlist must have its own folder — never reuse an existing one.</div>
             </div>
             <div class="guide-step">
-                <span class="guide-step-number">5</span>
+                <span class="guide-step-number">4</span>
                 <span class="guide-step-title">Click Start Sync</span>
                 <div class="guide-step-content">Watch the terminal output for progress. Songs will be downloaded and added to your Apple Music library automatically.</div>
             </div>
             <div class="guide-step">
-                <span class="guide-step-number">6</span>
+                <span class="guide-step-number">5</span>
                 <span class="guide-step-title">Sync to iPhone and iPad</span>
                 <div class="guide-step-content">To sync automatically to your other devices, open Apple Music, go to Music, then Settings, then General, and turn on Sync Library. Songs will appear on your iPhone and iPad within a few minutes.</div>
             </div>
@@ -509,8 +492,6 @@
                         document.getElementById('spAuthToken').value = config.auth_token;
                     }
                     if (config.playlist_url) document.getElementById('amPlaylistUrl').value = config.playlist_url;
-                    if (config.album_name) document.getElementById('amAlbumName').value = config.album_name;
-                    if (config.album_artist) document.getElementById('amAlbumArtist').value = config.album_artist;
                     if (config.download_path) document.getElementById('amDownloadPath').value = config.download_path;
                     if (config.sp_playlist_url) document.getElementById('spPlaylistUrl').value = config.sp_playlist_url;
                     if (config.sp_download_path) document.getElementById('spDownloadPath').value = config.sp_download_path;
@@ -527,8 +508,6 @@
                 config = {
                     authToken: document.getElementById('amAuthToken').value,
                     playlistUrl: document.getElementById('amPlaylistUrl').value,
-                    albumName: document.getElementById('amAlbumName').value,
-                    albumArtist: document.getElementById('amAlbumArtist').value,
                     downloadPath: document.getElementById('amDownloadPath').value
                 };
             } else {
@@ -576,11 +555,9 @@
         function startAmSync() {
             const authToken = document.getElementById('amAuthToken').value.trim();
             const playlistUrl = document.getElementById('amPlaylistUrl').value.trim();
-            const albumName = document.getElementById('amAlbumName').value.trim();
-            const albumArtist = document.getElementById('amAlbumArtist').value.trim();
             const downloadPath = document.getElementById('amDownloadPath').value.trim();
 
-            if (!authToken || !playlistUrl || !albumName || !downloadPath) {
+            if (!authToken || !playlistUrl || !downloadPath) {
                 showAlert('Please fill in all required fields', 'error');
                 return;
             }
@@ -601,7 +578,7 @@
             fetch(API_BASE + '/sync/start', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ authToken, playlistUrl, albumName, albumArtist, downloadPath })
+                body: JSON.stringify({ authToken, playlistUrl, downloadPath })
             })
             .then(response => streamResponse(response, 'amTerminal', 'amStatusText', 'amCompleteBox', 'Sync complete - Check Apple Music'))
             .catch(err => {

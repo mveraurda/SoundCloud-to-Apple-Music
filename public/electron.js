@@ -71,7 +71,7 @@ SP_DOWNLOAD_PATH=${spDownloadPath || ''}`;
         res.setHeader('Cache-Control', 'no-cache');
         res.setHeader('Connection', 'keep-alive');
  
-        const { authToken, playlistUrl, albumName, albumArtist, downloadPath } = req.body;
+        const { authToken, playlistUrl, downloadPath } = req.body;
         const syncBin = getSyncBinPath();
         const ffmpegPath = getFfmpegPath();
  
@@ -86,8 +86,6 @@ SP_DOWNLOAD_PATH=${spDownloadPath || ''}`;
         const proc = spawn(syncBin, [
             '--auth-token', authToken,
             '--playlist-url', playlistUrl,
-            '--album-name', albumName,
-            '--album-artist', albumArtist || '',
             '--download-path', downloadPath
         ], { env });
  
