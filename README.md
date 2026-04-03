@@ -47,6 +47,7 @@ macOS blocks apps from unidentified developers by default. If you see a warning:
   - Your download folder isn't empty
   - Apple Music is running
   - Playlist is public (DOES NOT WORK FOR PRIVATE PLAYLISTS)
+  - For Apple Music automaticaly syncage into iPhone make sure in apple music settings Sync Library is checked on
 
 ---
 
